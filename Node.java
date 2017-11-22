@@ -4,22 +4,21 @@ public class Node {
     private int     xPos;
     private int     yPos;
     private char    data;
-    private boolean start;
-    private boolean end;
+    private boolean edge; // to make sure we handle edge nodes differently
 
-    //distance from node to target node
-    public int      hValue;
+    //distance from node to target node (heuristic)
+    private int     hValue;
     //movement cost from node to adjacent
+    private int     gValue;
+    //heuristic + movement cost
+    private int     fValue;
+    private Node    parent;
 
-    public int      fValue;
-    public Node     parent;
-
-    public Node(int yPos, int xPos, char data, boolean start, boolean end) {
+    public Node(int yPos, int xPos, char data, boolean edge) {
         this.data  = data;
         this.yPos  = yPos;
         this.xPos  = xPos;
-        this.start = start;
-        this.end   = end;
+        this.edge  = edge;
     }
 
 //    public String toString() {
@@ -29,4 +28,33 @@ public class Node {
     public char getData() {
         return data;
     }
+
+    public int getYPos() {
+        return yPos;
+    }
+
+    public int getXPos() {
+        return xPos;
+    }
+
+    public int getHValue(){
+        return hValue;
+    }
+
+    public Node getParent() {
+        return parent;
+    }
+
+    public void setHValue(int value) {
+        this.hValue = value;
+    }
+
+    public void setParent(Node node) {
+        this.parent = node;
+    }
+
+    public void setFValue(int hValue, int gValue) {
+        this.fValue = hValue + gValue;
+    }
+
 }
