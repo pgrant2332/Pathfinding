@@ -14,9 +14,9 @@ public class Node {
     private Node    parent = null;
 
     public Node(int yPos, int xPos, char data) {
-        this.data  = data;
-        this.yPos  = yPos;
-        this.xPos  = xPos;
+        this.data = data;
+        this.yPos = yPos;
+        this.xPos = xPos;
     }
 
     public String toString() {

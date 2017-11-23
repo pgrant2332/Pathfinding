@@ -156,14 +156,27 @@ public class AStar{
 
                 }
 
-                if(neighbor == null || neighbor == startNode)
+                if(neighbor == null || neighbor == startNode || neighbor.getData() == 'W')
                     continue;
-                if(neighbor.getParent() == null) {
+
+                //check lists
+                if(closedList.contains(neighbor));
+
+                else if(neighbor.getParent() == null) {
                     neighbor.setParent(currentNode);
                     neighbor.setFValue();
                     neighbor.setData('e');
                     openList.add(neighbor);
                 }
+                //LEFT HERE
+                /* else {
+                    if (neighbor.getGValue() < currentNode.getGValue()) {
+                        neighbor.setParent(currentNode.getParent());
+                        Node tmp = currentNode.getParent();
+                        currentNode.setParent(tmp.getParent());
+                    }
+                }*/
+
                 if(neighbor == endNode) {
                     currentNode = endNode;
                 }
@@ -176,7 +189,7 @@ public class AStar{
             }
             //sorts list based on F values
 
-           System.out.println();
+            System.out.println();
 
 */          Collections.sort(openList, (n1, n2) -> n1.getFValue() - n2.getFValue());
 /*            for(Node nodes : openList) {
@@ -186,10 +199,10 @@ public class AStar{
             System.out.println();
 */          if(currentNode == endNode)
                 break;
+
             currentNode = openList.get(0);
             closedList.add(currentNode);
             openList.remove(0);
-
         }
         //backtracking;
         while(currentNode.getParent() != startNode) {
