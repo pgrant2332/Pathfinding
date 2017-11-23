@@ -39,7 +39,6 @@ public class AStar{
                 for(int j = 0; j < width; j++) {
 
                     char data = s.charAt(j);
-                    boolean edge = false;
 
                     if(data == 'A') {
                         nodeStartInX = j;
@@ -49,11 +48,7 @@ public class AStar{
                         nodeEndInX = j;
                         nodeEndInY = i;
                     }
-
-                    if(i == 0 || i == height - 1 ||
-                       j == 0 || j == width  - 1)
-                        edge = true;
-                    node[i][j] = new Node(i*10, j*10, data, edge);
+                    node[i][j] = new Node(i*10, j*10, data);
                 }
             }
             startNode = node[nodeStartInY][nodeStartInX];
@@ -67,36 +62,155 @@ public class AStar{
         //need to get all heuristics for nodes
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++) {
-                int hx = node[i][j].getXPos() - node[nodeEndInY][nodeEndInX].getXPos();
-                int hy = node[i][j].getYPos() - node[nodeEndInY][nodeEndInX].getYPos();
+                int hx = node[i][j].getXPos() - endNode.getXPos();
+                int hy = node[i][j].getYPos() - endNode.getYPos();
                 node[i][j].setHValue((int) Math.sqrt(hx*hx+hy*hy));
             }
         }
 
         //create open and closed lists
         //assign parent to surrounding nodes
-        List<Node> openList   = new ArrayList<Node>();
-        List<Node> closedList = new ArrayList<Node>();
-        Node currentNode = startNode;
+        List<Node> openList    = new ArrayList<Node>();
+        List<Node> closedList  = new ArrayList<Node>();
+        Node       currentNode = startNode;
 
-        while(currentNode != startNode){
+/*      for(Node nodes : openList) {
 
+            System.out.println(nodes.getHValue());
 
+        }
+*/        //sorts list based on hvalues
+
+/*        System.out.println();
+
+        for(Node nodes : openList) {
+            System.out.println(nodes.getHValue());
+        }
+
+        System.out.println();
+*/
+        //A Star implementation
+        while(currentNode != endNode){
+            //getting all parent nodes
+            for(int k = 0; k < 8; k++) {
+                int i = currentNode.getYPos() / 10;
+                int j = currentNode.getXPos() / 10;
+                Node neighbor = null;
+
+                switch(k) {
+                    case 0 :
+                        if(i - 1 < 0 || j - 1 < 0)
+                            break;
+                        neighbor = node[i-1][j-1];
+                        neighbor.setGValue(14);
+                        break;
+
+                    case 1 :
+                        if(i - 1 < 0)
+                            break;
+                        neighbor = node[i-1][j];
+                        neighbor.setGValue(10);
+                        break;
+
+                    case 2 :
+                        if((i - 1) < 0 || (j + 1) == width)
+                            break;
+                        neighbor = node[i-1][j+1];
+                        neighbor.setGValue(14);
+                        break;
+
+                    case 3 :
+                        if((j + 1) == width)
+                            break;
+                        neighbor = node[i][j+1];
+                        neighbor.setGValue(10);
+                        break;
+
+                    case 4 :
+                        if((i + 1) == height || (j + 1) == width)
+                            break;
+                        neighbor = node[i+1][j+1];
+                        neighbor.setGValue(14);
+                        break;
+
+                    case 5 :
+                        if((i + 1) == height)
+                            break;
+                        neighbor = node[i+1][j];
+                        neighbor.setGValue(10);
+                        break;
+
+                    case 6 :
+                        if((i + 1) == height || (j - 1) < 0)
+                            break;
+                        neighbor = node[i+1][j-1];
+                        neighbor.setGValue(14);
+                        break;
+
+                    case 7 :
+                        if((j - 1) < 0)
+                            break;
+                        neighbor = node[i][j-1];
+                        neighbor.setGValue(10);
+                        break;
+
+                }
+
+                if(neighbor == null || neighbor == startNode)
+                    continue;
+                if(neighbor.getParent() == null) {
+                    neighbor.setParent(currentNode);
+                    neighbor.setFValue();
+                    neighbor.setData('e');
+                    openList.add(neighbor);
+                }
+                if(neighbor == endNode) {
+                    currentNode = endNode;
+                }
+            }
+
+/*          for(Node nodes : openList) {
+
+                System.out.println(nodes.getFValue());
+
+            }
+            //sorts list based on F values
+
+           System.out.println();
+
+*/          Collections.sort(openList, (n1, n2) -> n1.getFValue() - n2.getFValue());
+/*            for(Node nodes : openList) {
+                System.out.println(nodes.getFValue());
+            }
+
+            System.out.println();
+*/          if(currentNode == endNode)
+                break;
+            currentNode = openList.get(0);
+            closedList.add(currentNode);
+            openList.remove(0);
+
+        }
+        //backtracking;
+        while(currentNode.getParent() != startNode) {
+            currentNode = currentNode.getParent();
+            currentNode.setData('-');
         }
 
         //testing to see if nodes were creatd correctly
         try {
             FileOutputStream out = new FileOutputStream("output.txt");
-                for(int i = 0; i < height; i++) {
-                    for(int j = 0; j < width; j++) {
-                        out.write(node[i][j].getData());
-                    }
-                out.write('\n');
+            for(int i = 0; i < height; i++) {
+                for(int j = 0; j < width; j++) {
+                    out.write(node[i][j].getData());
                 }
+            out.write('\n');
+            }
         }
         catch (IOException e) {
             System.exit(1);
         }
+        /*
         //testing heuristics of each node
         for(int i = 0; i < height; i++) {
             for(int j = 0; j < width; j++) {
@@ -104,10 +218,11 @@ public class AStar{
                     System.out.print(" A  ");
                     continue;
                 }
-                System.out.printf("%4d", node[i][j].getHValue());
+                System.out.printf("%4d", node[i][j].getFValue());
             }
             System.out.println();
         }
+        */
 
     }
 
