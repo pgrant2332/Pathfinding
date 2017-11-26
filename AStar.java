@@ -62,9 +62,10 @@ public class AStar{
         //need to get all heuristics for nodes
         for(int i = 0; i < height; i++){
             for(int j = 0; j < width; j++) {
-                int hx = node[i][j].getXPos() - endNode.getXPos();
-                int hy = node[i][j].getYPos() - endNode.getYPos();
-                node[i][j].setHValue((int) Math.sqrt(hx*hx+hy*hy));
+                int hx = Math.abs(node[i][j].getXPos() - endNode.getXPos());
+                int hy = Math.abs(node[i][j].getYPos() - endNode.getYPos());
+                //node[i][j].setHValue(((int) Math.sqrt(hx*hx+hy*hy) * 10));
+                node[i][j].setHValue((hx+hy) * 10);
             }
         }
 
@@ -73,6 +74,7 @@ public class AStar{
         List<Node> openList    = new ArrayList<Node>();
         List<Node> closedList  = new ArrayList<Node>();
         Node       currentNode = startNode;
+        closedList.add(currentNode);
 
 /*      for(Node nodes : openList) {
 
@@ -96,62 +98,63 @@ public class AStar{
                 int i = currentNode.getYPos() / 10;
                 int j = currentNode.getXPos() / 10;
                 Node neighbor = null;
+                int move = 0;
 
                 switch(k) {
                     case 0 :
                         if(i - 1 < 0 || j - 1 < 0)
                             break;
+                        move = 14;
                         neighbor = node[i-1][j-1];
-                        neighbor.setGValue(14);
                         break;
 
                     case 1 :
                         if(i - 1 < 0)
                             break;
+                        move = 10;
                         neighbor = node[i-1][j];
-                        neighbor.setGValue(10);
                         break;
 
                     case 2 :
                         if((i - 1) < 0 || (j + 1) == width)
                             break;
+                        move = 14;
                         neighbor = node[i-1][j+1];
-                        neighbor.setGValue(14);
                         break;
 
                     case 3 :
                         if((j + 1) == width)
                             break;
+                        move = 10;
                         neighbor = node[i][j+1];
-                        neighbor.setGValue(10);
                         break;
 
                     case 4 :
                         if((i + 1) == height || (j + 1) == width)
                             break;
+                        move = 14;
                         neighbor = node[i+1][j+1];
-                        neighbor.setGValue(14);
                         break;
 
                     case 5 :
                         if((i + 1) == height)
                             break;
+                        move = 10;
                         neighbor = node[i+1][j];
-                        neighbor.setGValue(10);
                         break;
 
                     case 6 :
                         if((i + 1) == height || (j - 1) < 0)
                             break;
+                        move = 14;
                         neighbor = node[i+1][j-1];
-                        neighbor.setGValue(14);
                         break;
 
                     case 7 :
                         if((j - 1) < 0)
                             break;
+                        move = 10;
                         neighbor = node[i][j-1];
-                        neighbor.setGValue(10);
                         break;
 
                 }
@@ -163,19 +166,27 @@ public class AStar{
                 if(closedList.contains(neighbor));
 
                 else if(neighbor.getParent() == null) {
+
+                    neighbor.setGValue(currentNode.getGValue() + move);
                     neighbor.setParent(currentNode);
                     neighbor.setFValue();
                     neighbor.setData('e');
                     openList.add(neighbor);
                 }
-                //LEFT HERE
-                /* else {
-                    if (neighbor.getGValue() < currentNode.getGValue()) {
-                        neighbor.setParent(currentNode.getParent());
-                        Node tmp = currentNode.getParent();
-                        currentNode.setParent(tmp.getParent());
-                    }
-                }*/
+                else if(currentNode.getGValue() + move < neighbor.getGValue()) {
+                    neighbor.setParent(currentNode);
+                    neighbor.resetGValue();
+                    neighbor.setGValue(move);
+                    //adjust neighbors g score
+                    neighbor.setFValue();
+                    //openList.add(neighbor);
+                    neighbor.setData('f');
+
+                    //closedList.remove(currentNode);
+                    //openList.add(neighbor);
+                }
+                //else
+                  //  currentNode.setHValue(move);
 
                 if(neighbor == endNode) {
                     currentNode = endNode;

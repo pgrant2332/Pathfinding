@@ -3,3 +3,5 @@
 Node.class
 Node.class
 AStar.class
+*.txt
+output.txt

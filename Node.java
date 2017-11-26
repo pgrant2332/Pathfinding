@@ -9,6 +9,7 @@ public class Node {
     private int     hValue = 0;
     //movement cost from node to adjacent
     private int     gValue = 0;
+    private int     tmpGValue = 0;
     //heuristic + movement cost
     private int     fValue = 0;
     private Node    parent = null;
@@ -52,23 +53,28 @@ public class Node {
     }
 
     public void setData(char c) {
-        this.data = c;
+        data = c;
     }
 
     public void setGValue(int value) {
-        this.gValue += value;
+        tmpGValue = value;
+        gValue += value;
+    }
+
+    public void resetGValue() {
+        gValue = gValue - tmpGValue;
     }
 
     public void setHValue(int value) {
-        this.hValue = value;
+        hValue = value;
     }
 
     public void setParent(Node node) {
-        this.parent = node;
+        parent = node;
     }
 
     public void setFValue() {
-        this.fValue = this.hValue + this.gValue;
+        fValue = hValue + gValue;
     }
 
 }
